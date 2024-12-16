@@ -1,18 +1,23 @@
+from openpyxl.styles import Font
+from openpyxl.utils import get_column_letter
 import yfinance as yf
 import openpyxl
 from pathlib import Path
-#from nsetools import Nse
 
 def fetch_yfinance(stock_symbols):
     """
-    Fetches current stock prices using Yahoo Finance.
+    Fetches current stock prices using Yahoo Finance and rounds them to 2 decimal places.
     
+    Args:
+        stock_symbols (list): List of stock symbols.
+    
+    Returns:
+        dict: A dictionary with stock symbols as keys and their current prices as values.
     """
     prices = {}
     for symbol in stock_symbols:
         try:
             stock = yf.Ticker(symbol)
-            #prices[symbol] = stock.history(period="1d")['Close'].iloc[-1]
             price = stock.history(period="1d")['Close'].iloc[-1]
             prices[symbol] = round(price, 2)
         except Exception as e:
@@ -21,19 +26,34 @@ def fetch_yfinance(stock_symbols):
 
 def update_excel(file_path, column, start_row, stock_name_to_scrip, prices):
     """
-    Updates the specified column in an Excel file with the latest prices.
+    Updates the specified column in an Excel file with the latest prices and applies color formatting to column K.
     
+    Args:
+        file_path (str): Path to the Excel file.
+        column (str): Column letter to update (e.g., 'F').
+        start_row (int): Row number to start updating from (e.g., 2).
+        stock_name_to_scrip (dict): Mapping of stock names to stock symbols.
+        prices (dict): Latest prices fetched from Yahoo Finance.
     """
     try:
         workbook = openpyxl.load_workbook(file_path)
         sheet = workbook.active
-        
+
         for i, row in enumerate(sheet.iter_rows(min_row=start_row), start=start_row):
-            stock_name = row[0].value  # Col A
+            stock_name = row[0].value  # Col. A
             if stock_name in stock_name_to_scrip:
                 symbol = stock_name_to_scrip[stock_name]
                 if symbol in prices:
                     sheet[f"{column}{i}"] = prices[symbol]
+
+        column_k_index = openpyxl.utils.column_index_from_string("K")
+        for row in sheet.iter_rows(min_row=start_row, min_col=column_k_index, max_col=column_k_index):
+            for cell in row:
+                if isinstance(cell.value, (int, float)):
+                    if cell.value > 100:
+                        cell.font = Font(color="00FF00")  # Colour 1
+                    elif cell.value < 0:
+                        cell.font = Font(color="FF0000")  # Colour 2
 
         workbook.save(file_path)
         print(f"Successfully updated {file_path}")
@@ -41,11 +61,11 @@ def update_excel(file_path, column, start_row, stock_name_to_scrip, prices):
         print(f"Error updating Excel file: {e}")
 
 if __name__ == "__main__":
-    file_path = Path("/blah-blah/abcd-xyz/Final_P&L_auto.xlsx")  # Actual file path
+    file_path = Path("/content/sample_data/Final_VVD_P&L_auto.xlsx")  # Actual file path
     column_to_update = "F"
     start_row = 2
-
     stock_name_to_scrip = {
+        
         "ASIAN PAINTS": "ASIANPAINT.NS",
         "BRITANNIA INDUSTRIES": "BRITANNIA.NS",
         "HAPPIEST MINDS TECH": "HAPPSTMNDS.NS",
@@ -80,7 +100,7 @@ if __name__ == "__main__":
         sheet = workbook.active
         stock_names = [sheet[f"A{row}"].value for row in range(start_row, sheet.max_row + 1)]
 
-    # Fetch prices
+    # Fetch
     scrips_to_fetch = [stock_name_to_scrip[name] for name in stock_names if name in stock_name_to_scrip]
     print("Fetching live data from Yahoo Finance...")
     stock_prices = fetch_yfinance(scrips_to_fetch)
