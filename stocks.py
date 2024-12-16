@@ -8,12 +8,7 @@ from pathlib import Path
 def fetch_yfinance(stock_symbols):
     """
     Fetches current stock prices using Yahoo Finance and rounds them to 2 decimal places.
-    
-    Args:
-        stock_symbols (list): List of stock symbols.
-    
-    Returns:
-        dict: A dictionary with stock symbols as keys and their current prices as values.
+   
     """
     prices = {}
     for symbol in stock_symbols:
@@ -29,12 +24,6 @@ def update_excel(file_path, column, start_row, stock_name_to_scrip, prices):
     """
     Updates the specified column in an Excel file with the latest prices and applies color formatting to column K.
     
-    Args:
-        file_path (str): Path to the Excel file.
-        column (str): Column letter to update (e.g., 'F').
-        start_row (int): Row number to start updating from (e.g., 2).
-        stock_name_to_scrip (dict): Mapping of stock names to stock symbols.
-        prices (dict): Latest prices fetched from Yahoo Finance.
     """
     try:
         workbook = openpyxl.load_workbook(file_path)
