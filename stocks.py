@@ -3,6 +3,7 @@ from openpyxl.utils import get_column_letter
 import yfinance as yf
 import openpyxl
 from pathlib import Path
+#from nsetools import Nse
 
 def fetch_yfinance(stock_symbols):
     """
