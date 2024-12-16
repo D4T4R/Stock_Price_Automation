@@ -61,7 +61,7 @@ def update_excel(file_path, column, start_row, stock_name_to_scrip, prices):
         print(f"Error updating Excel file: {e}")
 
 if __name__ == "__main__":
-    file_path = Path("/content/sample_data/Final_VVD_P&L_auto.xlsx")  # Actual file path
+    file_path = Path("/blah-blah/abcd-xyz/Final_P&L_auto.xlsx")  # Actual file path
     column_to_update = "F"
     start_row = 2
     stock_name_to_scrip = {
