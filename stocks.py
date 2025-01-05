@@ -1,6 +1,7 @@
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 import yfinance as yf
+from datetime import datetime
 import openpyxl
 from pathlib import Path
 #from nsetools import Nse
@@ -28,6 +29,8 @@ def update_excel(file_path, column, start_row, stock_name_to_scrip, prices):
     try:
         workbook = openpyxl.load_workbook(file_path)
         sheet = workbook.active
+        current_date = datetime.now().strftime("CMP ON %b %d %Y")  # Format: CMP ON JAN 05 2025
+        sheet[f"{column}1"] = current_date  # Update header in row 1 of column F
 
         for i, row in enumerate(sheet.iter_rows(min_row=start_row), start=start_row):
             stock_name = row[0].value  # Col. A
@@ -51,7 +54,7 @@ def update_excel(file_path, column, start_row, stock_name_to_scrip, prices):
         print(f"Error updating Excel file: {e}")
 
 if __name__ == "__main__":
-    file_path = Path("/blah-blah/abcd-xyz/Final_P&L_auto.xlsx")  # Actual file path
+    file_path = Path("/home/aniketdatar/Downloads/Stock_Price_Automation/Stock_Price_Automation/Final_P&L_auto.xlsx")  # Actual file path
     column_to_update = "F"
     start_row = 2
     stock_name_to_scrip = {
